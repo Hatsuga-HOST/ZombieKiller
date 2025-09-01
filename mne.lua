@@ -1,12 +1,11 @@
 -- ZiaanHub - Main Menu Hub (Full Custom UI, Tab Home full)
--- No external libraries. Customize asset ids below.
--- By (you) — 2025
+-- Enhanced with modern design elements and better layout
 
 -- ===========================
 -- CONFIG / ASSET PLACEHOLDERS
 -- ===========================
 local ASSETS = {
-    WINDOW_BG = nil,             -- optional image asset id for background (leave nil for solid)
+    WINDOW_BG = 135433659057390,             -- optional image asset id for background (leave nil for solid)
     LOGO = 0,                    -- main left-top moon logo (replace with your asset id)
     ICON_HOME = 0,               -- sidebar icon Home
     ICON_CODE = 0,               -- sidebar icon Code
@@ -116,8 +115,14 @@ local COLORS = {
     SPECIAL = {
         WAVE = Color3.fromRGB(112, 28, 28),
         WAVE_ALT = Color3.fromRGB(55, 55, 55),
-        DISCORD = Color3.fromRGB(60, 40, 110),
-        DISCORD_HOVER = Color3.fromRGB(90, 60, 160)
+        DISCORD = Color3.fromRGB(88, 101, 242),
+        DISCORD_HOVER = Color3.fromRGB(105, 116, 245)
+    },
+    ACCENT = {
+        BLUE = Color3.fromRGB(65, 140, 230),
+        GREEN = Color3.fromRGB(65, 200, 100),
+        RED = Color3.fromRGB(230, 80, 80),
+        PURPLE = Color3.fromRGB(150, 100, 220)
     }
 }
 
@@ -139,16 +144,24 @@ local screenGui = Create("ScreenGui", {
     ResetOnSpawn = false
 })
 
--- Main Window
+-- Add a subtle background blur for modern effect
+local BlurEffect = Create("BlurEffect", {
+    Parent = screenGui,
+    Size = 8,
+    Name = "BackgroundBlur"
+})
+
+-- Main Window with shadow effect
 local MainFrame = Create("Frame", {
     Parent = screenGui,
-    Size = UDim2.new(0, 920, 0, 520),
-    Position = UDim2.new(0.5, -460, 0.5, -260),
+    Size = UDim2.new(0, 950, 0, 560),
+    Position = UDim2.new(0.5, -475, 0.5, -280),
     BackgroundColor3 = COLORS.BACKGROUND.PRIMARY,
     BorderSizePixel = 0,
     ClipsDescendants = true,
     Children = {
-        {"UICorner", CornerRadius = UDim.new(0, 14)}
+        {"UICorner", CornerRadius = UDim.new(0, 14)},
+        {"UIStroke", Color = Color3.fromRGB(50, 50, 55), Thickness = 2}
     }
 })
 
@@ -159,7 +172,8 @@ local Header = Create("Frame", {
     BackgroundColor3 = COLORS.BACKGROUND.SECONDARY,
     Position = UDim2.new(0, 0, 0, 0),
     Children = {
-        {"UICorner", CornerRadius = UDim.new(0, 14)}
+        {"UICorner", CornerRadius = UDim.new(0, 14)},
+        {"UIStroke", Color = Color3.fromRGB(50, 50, 55), Thickness = 1}
     }
 })
 
@@ -168,7 +182,16 @@ local LogoImg = Create("ImageLabel", {
     Size = UDim2.new(0, 44, 0, 44),
     Position = UDim2.new(0, 12, 0.5, -22),
     BackgroundTransparency = 1,
-    Image = (ASSETS.LOGO and ASSETS.LOGO ~= 0) and ("rbxassetid://" .. tostring(ASSETS.LOGO)) or ""
+    Image = (ASSETS.LOGO and ASSETS.LOGO ~= 0) and ("rbxassetid://" .. tostring(ASSETS.LOGO)) or "",
+    Children = {
+        {"UIGradient", 
+            Rotation = 90,
+            Color = ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 200, 220)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 150, 180))
+            }
+        }
+    }
 })
 
 local TitleLabel = Create("TextLabel", {
@@ -178,7 +201,7 @@ local TitleLabel = Create("TextLabel", {
     BackgroundTransparency = 1,
     Text = "Hidden - Fisch",
     Font = FONTS.TITLE,
-    TextSize = 20,
+    TextSize = 22,
     TextColor3 = COLORS.TEXT.PRIMARY,
     TextXAlignment = Enum.TextXAlignment.Left
 })
@@ -201,12 +224,13 @@ local BtnClose = Create("TextButton", {
     Size = UDim2.new(0, 36, 0, 36),
     Position = UDim2.new(1, -46, 0.5, -18),
     BackgroundColor3 = COLORS.BACKGROUND.BUTTON,
-    Text = "X",
-    Font = FONTS.TITLE,
-    TextSize = 16,
+    Text = "×",
+    Font = Enum.Font.GothamBold,
+    TextSize = 20,
     TextColor3 = COLORS.TEXT.PRIMARY,
     Children = {
-        {"UICorner", CornerRadius = UDim.new(0, 8)}
+        {"UICorner", CornerRadius = UDim.new(0, 8)},
+        {"UIStroke", Color = Color3.fromRGB(60, 60, 65), Thickness = 1}
     }
 })
 
@@ -215,24 +239,26 @@ local BtnMin = Create("TextButton", {
     Size = UDim2.new(0, 36, 0, 36),
     Position = UDim2.new(1, -90, 0.5, -18),
     BackgroundColor3 = COLORS.BACKGROUND.BUTTON,
-    Text = "◻",
-    Font = FONTS.SUBTITLE,
-    TextSize = 16,
+    Text = "−",
+    Font = Enum.Font.GothamBold,
+    TextSize = 20,
     TextColor3 = COLORS.TEXT.PRIMARY,
     Children = {
-        {"UICorner", CornerRadius = UDim.new(0, 8)}
+        {"UICorner", CornerRadius = UDim.new(0, 8)},
+        {"UIStroke", Color = Color3.fromRGB(60, 60, 65), Thickness = 1}
     }
 })
 
 -- Left Sidebar
 local SideBar = Create("Frame", {
     Parent = MainFrame,
-    Size = UDim2.new(0, 72, 1, -70),
+    Size = UDim2.new(0, 80, 1, -70),
     Position = UDim2.new(0, 12, 0, 70),
     BackgroundColor3 = COLORS.BACKGROUND.TERTIARY,
     BorderSizePixel = 0,
     Children = {
-        {"UICorner", CornerRadius = UDim.new(0, 10)}
+        {"UICorner", CornerRadius = UDim.new(0, 10)},
+        {"UIStroke", Color = Color3.fromRGB(50, 50, 55), Thickness = 1}
     }
 })
 
@@ -249,32 +275,54 @@ local sidebarIcons = {
 
 local sideButtons = {}
 for i, info in ipairs(sidebarIcons) do
-    local btn = Create("ImageButton", {
+    local btnContainer = Create("Frame", {
         Parent = SideBar,
+        Size = UDim2.new(1, -12, 0, 56),
+        Position = UDim2.new(0, 6, 0, 12 + (i-1)*64),
+        BackgroundTransparency = 1
+    })
+    
+    local btn = Create("ImageButton", {
+        Parent = btnContainer,
         Size = UDim2.new(0, 48, 0, 48),
-        Position = UDim2.new(0, 12, 0, 12 + (i-1)*64),
+        Position = UDim2.new(0.5, -24, 0, 0),
         BackgroundColor3 = COLORS.BACKGROUND.BUTTON,
         Image = (info.id and info.id ~= 0) and ("rbxassetid://" .. tostring(info.id)) or "",
         ScaleType = Enum.ScaleType.Fit,
         Children = {
-            {"UICorner", CornerRadius = UDim.new(0, 10)}
+            {"UICorner", CornerRadius = UDim.new(0, 10)},
+            {"UIStroke", Color = Color3.fromRGB(60, 60, 65), Thickness = 1}
         }
+    })
+    
+    local btnLabel = Create("TextLabel", {
+        Parent = btnContainer,
+        Size = UDim2.new(1, 0, 0, 14),
+        Position = UDim2.new(0, 0, 1, -12),
+        BackgroundTransparency = 1,
+        Text = info.name,
+        Font = FONTS.SUBTITLE,
+        TextSize = 11,
+        TextColor3 = COLORS.TEXT.SECONDARY,
+        TextXAlignment = Enum.TextXAlignment.Center
     })
     
     -- Hover effect
     btn.MouseEnter:Connect(function()
         if not (i == 1 and btn.BackgroundColor3 == COLORS.BACKGROUND.BUTTON_ACTIVE) then
             Tween(btn, {BackgroundColor3 = COLORS.BACKGROUND.BUTTON_HOVER}, 0.2)
+            Tween(btnLabel, {TextColor3 = COLORS.TEXT.PRIMARY}, 0.2)
         end
     end)
     
     btn.MouseLeave:Connect(function()
         if not (i == 1 and btn.BackgroundColor3 == COLORS.BACKGROUND.BUTTON_ACTIVE) then
             Tween(btn, {BackgroundColor3 = COLORS.BACKGROUND.BUTTON}, 0.2)
+            Tween(btnLabel, {TextColor3 = COLORS.TEXT.SECONDARY}, 0.2)
         end
     end)
     
-    sideButtons[#sideButtons+1] = btn
+    sideButtons[#sideButtons+1] = {button = btn, label = btnLabel}
 end
 
 -- Small footer avatar (bottom-left)
@@ -287,7 +335,8 @@ local FooterAvatar = Create("ImageLabel", {
             ("rbxassetid://" .. tostring(ASSETS.FOOTER_AVATAR)) or 
             ("rbxthumb://type=AvatarHeadShot&id=" .. LocalPlayer.UserId .. "&w=100&h=100"),
     Children = {
-        {"UICorner", CornerRadius = UDim.new(1, 0)}
+        {"UICorner", CornerRadius = UDim.new(1, 0)},
+        {"UIStroke", Color = Color3.fromRGB(80, 80, 90), Thickness = 2}
     }
 })
 
@@ -304,12 +353,13 @@ local ContentArea = Create("Frame", {
 -- Profile Bar (top)
 local ProfileBar = Create("Frame", {
     Parent = ContentArea,
-    Size = UDim2.new(1, 0, 0, 92),
+    Size = UDim2.new(1, 0, 0, 100),
     Position = UDim2.new(0, 0, 0, 0),
     BackgroundColor3 = COLORS.BACKGROUND.CARD,
     ClipsDescendants = true,
     Children = {
-        {"UICorner", CornerRadius = UDim.new(0, 10)}
+        {"UICorner", CornerRadius = UDim.new(0, 10)},
+        {"UIStroke", Color = Color3.fromRGB(50, 50, 55), Thickness = 1}
     }
 })
 
@@ -320,7 +370,8 @@ local Av = Create("ImageLabel", {
     BackgroundTransparency = 1,
     Image = "rbxthumb://type=AvatarHeadShot&id=" .. LocalPlayer.UserId .. "&w=420&h=420",
     Children = {
-        {"UICorner", CornerRadius = UDim.new(1, 0)}
+        {"UICorner", CornerRadius = UDim.new(1, 0)},
+        {"UIStroke", Color = Color3.fromRGB(80, 80, 90), Thickness = 2}
     }
 })
 
@@ -331,7 +382,7 @@ local HelloText = Create("TextLabel", {
     BackgroundTransparency = 1,
     Text = "Hello, " .. (LocalPlayer.DisplayName ~= "" and LocalPlayer.DisplayName or LocalPlayer.Name),
     Font = FONTS.TITLE,
-    TextSize = 20,
+    TextSize = 22,
     TextColor3 = COLORS.TEXT.PRIMARY,
     TextXAlignment = Enum.TextXAlignment.Left
 })
@@ -351,8 +402,8 @@ local SubText = Create("TextLabel", {
 -- Container below profile
 local LowerContainer = Create("Frame", {
     Parent = ContentArea,
-    Size = UDim2.new(1, 0, 1, -112),
-    Position = UDim2.new(0, 0, 0, 104),
+    Size = UDim2.new(1, 0, 1, -120),
+    Position = UDim2.new(0, 0, 0, 112),
     BackgroundTransparency = 1,
 })
 
@@ -375,12 +426,13 @@ local RightCol = Create("Frame", {
 -- Server Card (big)
 local ServerCard = Create("Frame", {
     Parent = LeftCol,
-    Size = UDim2.new(1, 0, 0, 240),
+    Size = UDim2.new(1, 0, 0, 260),
     Position = UDim2.new(0, 0, 0, 0),
     BackgroundColor3 = COLORS.BACKGROUND.TERTIARY,
     ClipsDescendants = true,
     Children = {
-        {"UICorner", CornerRadius = UDim.new(0, 12)}
+        {"UICorner", CornerRadius = UDim.new(0, 12)},
+        {"UIStroke", Color = Color3.fromRGB(50, 50, 55), Thickness = 1}
     }
 })
 
@@ -388,7 +440,7 @@ local ServerTitle = Create("TextLabel", {
     Parent = ServerCard,
     Text = "Server",
     Size = UDim2.new(1, 0, 0, 28),
-    Position = UDim2.new(0, 10, 0, 6),
+    Position = UDim2.new(0, 14, 0, 8),
     BackgroundTransparency = 1,
     Font = FONTS.TITLE,
     TextSize = 18,
@@ -400,7 +452,7 @@ local ServerDesc = Create("TextLabel", {
     Parent = ServerCard,
     Text = "Information on the session you're currently in",
     Size = UDim2.new(1, -20, 0, 20),
-    Position = UDim2.new(0, 10, 0, 32),
+    Position = UDim2.new(0, 14, 0, 36),
     BackgroundTransparency = 1,
     Font = FONTS.SUBTITLE,
     TextSize = 13,
@@ -409,14 +461,15 @@ local ServerDesc = Create("TextLabel", {
 })
 
 -- Grid inside server: we'll create 6 small boxes
-local function makeServerBox(name, top, pos)
+local function makeServerBox(name, top, pos, iconColor)
     local box = Create("Frame", {
         Parent = ServerCard,
-        Size = UDim2.new(0.48, 0, 0, 64),
-        Position = pos or UDim2.new(0, 10, 0, 64 + (top-1)*74),
+        Size = UDim2.new(0.48, 0, 0, 70),
+        Position = pos or UDim2.new(0, 10, 0, 64 + (top-1)*80),
         BackgroundColor3 = COLORS.BACKGROUND.BOX,
         Children = {
-            {"UICorner", CornerRadius = UDim.new(0, 8)}
+            {"UICorner", CornerRadius = UDim.new(0, 8)},
+            {"UIStroke", Color = Color3.fromRGB(50, 50, 55), Thickness = 1}
         }
     })
     
@@ -440,19 +493,19 @@ local function makeServerBox(name, top, pos)
         BackgroundTransparency = 1,
         Font = FONTS.SUBTITLE,
         TextSize = 14,
-        TextColor3 = COLORS.TEXT.ACCENT,
+        TextColor3 = iconColor or COLORS.TEXT.ACCENT,
         TextXAlignment = Enum.TextXAlignment.Left
     })
     
     return {frame = box, title = t, value = v}
 end
 
-local PlayersBox = makeServerBox("Players", 1, UDim2.new(0, 10, 0, 64))
-local MaxPlayersBox = makeServerBox("Maximum Players", 1, UDim2.new(0.52, 0, 0, 64))
-local LatencyBox = makeServerBox("Latency", 2, UDim2.new(0, 10, 0, 64 + 74))
-local RegionBox = makeServerBox("Server Region", 2, UDim2.new(0.52, 0, 0, 64 + 74))
-local InServerForBox = makeServerBox("In server for", 3, UDim2.new(0, 10, 0, 64 + 148))
-local JoinScriptBox = makeServerBox("Join Script", 3, UDim2.new(0.52, 0, 0, 64 + 148))
+local PlayersBox = makeServerBox("Players", 1, UDim2.new(0, 10, 0, 64), COLORS.ACCENT.BLUE)
+local MaxPlayersBox = makeServerBox("Maximum Players", 1, UDim2.new(0.52, 0, 0, 64), COLORS.ACCENT.GREEN)
+local LatencyBox = makeServerBox("Latency", 2, UDim2.new(0, 10, 0, 64 + 80), COLORS.ACCENT.PURPLE)
+local RegionBox = makeServerBox("Server Region", 2, UDim2.new(0.52, 0, 0, 64 + 80), COLORS.ACCENT.RED)
+local InServerForBox = makeServerBox("In server for", 3, UDim2.new(0, 10, 0, 64 + 160), COLORS.ACCENT.BLUE)
+local JoinScriptBox = makeServerBox("Join Script", 3, UDim2.new(0.52, 0, 0, 64 + 160), COLORS.ACCENT.GREEN)
 
 -- Join script button (copy)
 local JoinBtn = Create("TextButton", {
@@ -465,27 +518,29 @@ local JoinBtn = Create("TextButton", {
     TextSize = 14,
     TextColor3 = COLORS.TEXT.PRIMARY,
     Children = {
-        {"UICorner", CornerRadius = UDim.new(0, 6)}
+        {"UICorner", CornerRadius = UDim.new(0, 6)},
+        {"UIStroke", Color = Color3.fromRGB(60, 60, 65), Thickness = 1}
     }
 })
 
 -- Right column: Wave + Friends
 local WaveCard = Create("Frame", {
     Parent = RightCol,
-    Size = UDim2.new(1, 0, 0, 120),
+    Size = UDim2.new(1, 0, 0, 130),
     Position = UDim2.new(0, 0, 0, 0),
     BackgroundColor3 = COLORS.SPECIAL.WAVE,
     ClipsDescendants = true,
     Children = {
-        {"UICorner", CornerRadius = UDim.new(0, 10)}
+        {"UICorner", CornerRadius = UDim.new(0, 10)},
+        {"UIStroke", Color = Color3.fromRGB(130, 40, 40), Thickness = 1}
     }
 })
 
 local WaveTitle = Create("TextLabel", {
     Parent = WaveCard,
-    Text = "Wave",
+    Text = "Executor Status",
     Size = UDim2.new(1, -18, 0, 28),
-    Position = UDim2.new(0, 10, 0, 6),
+    Position = UDim2.new(0, 14, 0, 8),
     BackgroundTransparency = 1,
     Font = FONTS.TITLE,
     TextSize = 16,
@@ -497,7 +552,7 @@ local WaveDesc = Create("TextLabel", {
     Parent = WaveCard,
     Text = "Your executor seems to support this script.",
     Size = UDim2.new(1, -18, 0, 40),
-    Position = UDim2.new(0, 10, 0, 36),
+    Position = UDim2.new(0, 14, 0, 40),
     BackgroundTransparency = 1,
     Font = FONTS.SUBTITLE,
     TextSize = 14,
@@ -506,14 +561,25 @@ local WaveDesc = Create("TextLabel", {
     TextWrapped = true
 })
 
+-- Add an icon to the wave card
+local WaveIcon = Create("ImageLabel", {
+    Parent = WaveCard,
+    Size = UDim2.new(0, 40, 0, 40),
+    Position = UDim2.new(1, -50, 0.5, -20),
+    BackgroundTransparency = 1,
+    Image = "rbxassetid://7733765391", -- Checkmark icon
+    ImageColor3 = Color3.fromRGB(230, 230, 230)
+})
+
 local FriendsCard = Create("Frame", {
     Parent = RightCol,
-    Size = UDim2.new(1, 0, 0, 220),
-    Position = UDim2.new(0, 0, 0, 140),
+    Size = UDim2.new(1, 0, 0, 230),
+    Position = UDim2.new(0, 0, 0, 145),
     BackgroundColor3 = COLORS.BACKGROUND.TERTIARY,
     ClipsDescendants = true,
     Children = {
-        {"UICorner", CornerRadius = UDim.new(0, 10)}
+        {"UICorner", CornerRadius = UDim.new(0, 10)},
+        {"UIStroke", Color = Color3.fromRGB(50, 50, 55), Thickness = 1}
     }
 })
 
@@ -521,7 +587,7 @@ local FriendsTitle = Create("TextLabel", {
     Parent = FriendsCard,
     Text = "Friends",
     Size = UDim2.new(1, -18, 0, 28),
-    Position = UDim2.new(0, 10, 0, 8),
+    Position = UDim2.new(0, 14, 0, 10),
     BackgroundTransparency = 1,
     Font = FONTS.TITLE,
     TextSize = 16,
@@ -533,7 +599,7 @@ local FriendsDesc = Create("TextLabel", {
     Parent = FriendsCard,
     Text = "Find out what your friends are currently doing",
     Size = UDim2.new(1, -18, 0, 20),
-    Position = UDim2.new(0, 10, 0, 34),
+    Position = UDim2.new(0, 14, 0, 38),
     BackgroundTransparency = 1,
     Font = FONTS.SUBTITLE,
     TextSize = 13,
@@ -542,14 +608,15 @@ local FriendsDesc = Create("TextLabel", {
 })
 
 -- Grid of 4 boxes (In Server, Offline, Online, All)
-local function makeFriendBox(text, pos)
+local function makeFriendBox(text, pos, color)
     local f = Create("Frame", {
         Parent = FriendsCard,
-        Size = UDim2.new(0.48, 0, 0, 72),
+        Size = UDim2.new(0.48, 0, 0, 76),
         Position = pos,
         BackgroundColor3 = COLORS.BACKGROUND.BOX,
         Children = {
-            {"UICorner", CornerRadius = UDim.new(0, 8)}
+            {"UICorner", CornerRadius = UDim.new(0, 8)},
+            {"UIStroke", Color = Color3.fromRGB(50, 50, 55), Thickness = 1}
         }
     })
     
@@ -557,7 +624,7 @@ local function makeFriendBox(text, pos)
         Parent = f,
         Text = text,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 8, 0, 6),
+        Position = UDim2.new(0, 10, 0, 8),
         Size = UDim2.new(1, -16, 0, 20),
         Font = FONTS.TITLE,
         TextSize = 14,
@@ -569,52 +636,62 @@ local function makeFriendBox(text, pos)
         Parent = f,
         Text = "0",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 8, 0, 34),
+        Position = UDim2.new(0, 10, 0, 36),
         Size = UDim2.new(1, -16, 0, 28),
         Font = FONTS.SUBTITLE,
-        TextSize = 16,
-        TextColor3 = COLORS.TEXT.ACCENT,
+        TextSize = 18,
+        TextColor3 = color or COLORS.TEXT.ACCENT,
         TextXAlignment = Enum.TextXAlignment.Left
     })
     
     return {frame = f, value = val}
 end
 
-local FriendInServer = makeFriendBox("In Server", UDim2.new(0, 10, 0, 64))
-local FriendOffline   = makeFriendBox("Offline", UDim2.new(0.52, 0, 0, 64))
-local FriendOnline    = makeFriendBox("Online", UDim2.new(0, 10, 0, 146))
-local FriendAll       = makeFriendBox("All", UDim2.new(0.52, 0, 0, 146))
+local FriendInServer = makeFriendBox("In Server", UDim2.new(0, 10, 0, 70), COLORS.ACCENT.GREEN)
+local FriendOffline   = makeFriendBox("Offline", UDim2.new(0.52, 0, 0, 70), COLORS.ACCENT.RED)
+local FriendOnline    = makeFriendBox("Online", UDim2.new(0, 10, 0, 156), COLORS.ACCENT.BLUE)
+local FriendAll       = makeFriendBox("All", UDim2.new(0.52, 0, 0, 156), COLORS.ACCENT.PURPLE)
 
--- Discord banner (full width at bottom)
+-- Discord banner (fixed width at bottom)
 local DiscordBanner = Create("TextButton", {
     Parent = ContentArea,
-    Size = UDim2.new(1, 0, 0, 60),
-    Position = UDim2.new(0, 0, 1, -70),
+    Size = UDim2.new(1, -20, 0, 60),
+    Position = UDim2.new(0, 10, 1, -70),
     BackgroundColor3 = COLORS.SPECIAL.DISCORD,
     Text = "",
     Children = {
-        {"UICorner", CornerRadius = UDim.new(0, 12)}
+        {"UICorner", CornerRadius = UDim.new(0, 12)},
+        {"UIStroke", Color = Color3.fromRGB(100, 115, 250), Thickness = 1}
     }
+})
+
+local DiscordIcon = Create("ImageLabel", {
+    Parent = DiscordBanner,
+    Size = UDim2.new(0, 36, 0, 36),
+    Position = UDim2.new(0, 14, 0.5, -18),
+    BackgroundTransparency = 1,
+    Image = "rbxassetid://7733709235", -- Discord logo
+    ImageColor3 = Color3.fromRGB(255, 255, 255)
 })
 
 local DiscTitle = Create("TextLabel", {
     Parent = DiscordBanner,
-    Size = UDim2.new(0.7, -10, 1, 0),
-    Position = UDim2.new(0, 14, 0, 0),
+    Size = UDim2.new(0.7, -10, 0, 26),
+    Position = UDim2.new(0, 60, 0, 10),
     BackgroundTransparency = 1,
-    Text = "Discord",
+    Text = "Join Our Discord",
     Font = FONTS.TITLE,
-    TextSize = 20,
+    TextSize = 18,
     TextColor3 = COLORS.TEXT.PRIMARY,
     TextXAlignment = Enum.TextXAlignment.Left
 })
 
 local DiscSub = Create("TextLabel", {
     Parent = DiscordBanner,
-    Size = UDim2.new(0.8, -10, 1, 0),
-    Position = UDim2.new(0, 14, 0, 26),
+    Size = UDim2.new(0.8, -10, 0, 20),
+    Position = UDim2.new(0, 60, 0, 36),
     BackgroundTransparency = 1,
-    Text = "Tap to join the Discord Server",
+    Text = "Tap to join the community",
     Font = FONTS.SUBTITLE,
     TextSize = 14,
     TextColor3 = Color3.fromRGB(210, 210, 230),
@@ -631,7 +708,7 @@ local function UpdateServerInfo()
     local cur = #Players:GetPlayers()
     local max = (game.Players.MaxPlayers and tostring(game.Players.MaxPlayers)) or "-"
     PlayersBox.value.Text = tostring(cur) .. " playing"
-    MaxPlayersBox.value.Text = tostring(max) .. " players can join this server"
+    MaxPlayersBox.value.Text = tostring(max) .. " max"
 end
 
 -- update latency (try Stats)
@@ -658,6 +735,13 @@ local function UpdateLatencyRegion()
     local ping = GetLatencyMs()
     if ping then
         LatencyBox.value.Text = tostring(ping) .. " ms"
+        if ping < 100 then
+            LatencyBox.value.TextColor3 = COLORS.ACCENT.GREEN
+        elseif ping < 200 then
+            LatencyBox.value.TextColor3 = COLORS.ACCENT.BLUE
+        else
+            LatencyBox.value.TextColor3 = COLORS.ACCENT.RED
+        end
     else
         LatencyBox.value.Text = "-- ms"
     end
@@ -712,9 +796,11 @@ local function UpdateWave()
     if ok then
         WaveDesc.Text = "Your executor seems to support this script."
         WaveCard.BackgroundColor3 = COLORS.SPECIAL.WAVE
+        WaveIcon.Image = "rbxassetid://7733765391" -- Checkmark
     else
-        WaveDesc.Text = "Executor support not detected."
+        WaveDesc.Text = "Executor support not detected. Some features may not work properly."
         WaveCard.BackgroundColor3 = COLORS.SPECIAL.WAVE_ALT
+        WaveIcon.Image = "rbxassetid://7733685183" -- Warning icon
     end
 end
 
@@ -733,7 +819,14 @@ end
 local function UpdateFriendsBoxes()
     local total = #friendList
     local inServer = 0
+    local online = 0
+    
     for _, f in ipairs(friendList) do
+        local isOnline = f.IsOnline or false
+        if isOnline then
+            online = online + 1
+        end
+        
         for _, p in ipairs(Players:GetPlayers()) do
             if p.UserId == f.Id then
                 inServer = inServer + 1
@@ -741,10 +834,11 @@ local function UpdateFriendsBoxes()
             end
         end
     end
-    FriendAll.value.Text = tostring(total) .. " Friends"
-    FriendInServer.value.Text = tostring(inServer) .. " in server"
-    FriendOnline.value.Text = tostring(inServer) .. " friends" -- treat in-server as online
-    FriendOffline.value.Text = tostring(math.max(0, total - inServer)) .. " friends"
+    
+    FriendAll.value.Text = tostring(total)
+    FriendInServer.value.Text = tostring(inServer)
+    FriendOnline.value.Text = tostring(online)
+    FriendOffline.value.Text = tostring(math.max(0, total - online))
 end
 
 -- Discord banner copy
@@ -755,16 +849,6 @@ DiscordBanner.MouseButton1Click:Connect(function()
     Tween(DiscordBanner, {BackgroundColor3 = COLORS.SPECIAL.DISCORD_HOVER}, 0.18)
     wait(0.35)
     Tween(DiscordBanner, {BackgroundColor3 = orig}, 0.25)
-end)
-
--- players join/leave hooking
-Players.PlayerAdded:Connect(function()
-    UpdateServerInfo()
-    UpdateFriendsBoxes()
-end)
-Players.PlayerRemoving:Connect(function()
-    UpdateServerInfo()
-    UpdateFriendsBoxes()
 end)
 
 -- Button hover effects
@@ -780,6 +864,24 @@ BtnMin.MouseEnter:Connect(function()
 end)
 BtnMin.MouseLeave:Connect(function()
     Tween(BtnMin, {BackgroundColor3 = COLORS.BACKGROUND.BUTTON}, 0.2)
+end)
+
+-- Discord banner hover effect
+DiscordBanner.MouseEnter:Connect(function()
+    Tween(DiscordBanner, {BackgroundColor3 = COLORS.SPECIAL.DISCORD_HOVER}, 0.2)
+end)
+DiscordBanner.MouseLeave:Connect(function()
+    Tween(DiscordBanner, {BackgroundColor3 = COLORS.SPECIAL.DISCORD}, 0.2)
+end)
+
+-- players join/leave hooking
+Players.PlayerAdded:Connect(function()
+    UpdateServerInfo()
+    UpdateFriendsBoxes()
+end)
+Players.PlayerRemoving:Connect(function()
+    UpdateServerInfo()
+    UpdateFriendsBoxes()
 end)
 
 -- initial load
@@ -840,7 +942,8 @@ end)
 
 -- Focus: default highlight Home sidebar button visually
 if sideButtons[1] then
-    sideButtons[1].BackgroundColor3 = COLORS.BACKGROUND.BUTTON_ACTIVE
+    sideButtons[1].button.BackgroundColor3 = COLORS.BACKGROUND.BUTTON_ACTIVE
+    sideButtons[1].label.TextColor3 = COLORS.TEXT.PRIMARY
 end
 
 -- End of script
