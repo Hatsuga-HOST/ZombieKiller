@@ -237,7 +237,11 @@ local SideBar = Create("Frame", {
     BackgroundColor3 = COLORS.BACKGROUND.TERTIARY,
     BorderSizePixel = 0,
     Children = {
-        {"UICorner", CornerRadius = UDim.new(0, 10)}
+        {"UICorner", CornerRadius = UDim.new(0, 10)},
+        {"UIListLayout", 
+            SortOrder = Enum.SortOrder.LayoutOrder,
+            Padding = UDim.new(0, 8)
+        }
     }
 })
 
@@ -257,10 +261,10 @@ for i, info in ipairs(sidebarIcons) do
     local btn = Create("ImageButton", {
         Parent = SideBar,
         Size = UDim2.new(0, 48, 0, 48),
-        Position = UDim2.new(0, 12, 0, 12 + (i-1)*64),
         BackgroundColor3 = COLORS.BACKGROUND.BUTTON,
         Image = (info.id and info.id ~= 0) and ("rbxassetid://" .. tostring(info.id)) or "",
         ScaleType = Enum.ScaleType.Fit,
+        LayoutOrder = i,
         Children = {
             {"UICorner", CornerRadius = UDim.new(0, 10)}
         }
@@ -307,7 +311,7 @@ local ContentArea = Create("Frame", {
 -- Scrolling Frame for Content
 local ContentScroller = Create("ScrollingFrame", {
     Parent = ContentArea,
-    Size = UDim2.new(1, 0, 1, -70), -- Reduced height to make room for Discord banner
+    Size = UDim2.new(1, 0, 1, 0),
     Position = UDim2.new(0, 0, 0, 0),
     BackgroundTransparency = 1,
     ScrollBarThickness = 6,
@@ -463,9 +467,9 @@ local function makeServerBox(name, top, pos)
         Position = UDim2.new(0, 8, 0, 34),
         BackgroundTransparency = 1,
         Font = FONTS.SUBTITLE,
-    TextSize = 14,
-    TextColor3 = COLORS.TEXT.ACCENT,
-    TextXAlignment = Enum.TextXAlignment.Left
+        TextSize = 14,
+        TextColor3 = COLORS.TEXT.ACCENT,
+        TextXAlignment = Enum.TextXAlignment.Left
     })
     
     return {frame = box, title = t, value = v}
@@ -611,12 +615,12 @@ local FriendAll       = makeFriendBox("All", UDim2.new(0.52, 0, 0, 146))
 
 -- Discord banner (fixed size at bottom)
 local DiscordBanner = Create("TextButton", {
-    Parent = ContentArea,
-    Size = UDim2.new(1, -20, 0, 50), -- Reduced height
-    Position = UDim2.new(0, 10, 1, -60), -- Adjusted position
+    Parent = ContentScroller,
+    Size = UDim2.new(1, -20, 0, 50),
+    Position = UDim2.new(0, 10, 0, 0),
     BackgroundColor3 = COLORS.SPECIAL.DISCORD,
     Text = "",
-    ZIndex = 10, -- Ensure it stays on top
+    LayoutOrder = 3,
     Children = {
         {"UICorner", CornerRadius = UDim.new(0, 12)}
     }
@@ -627,7 +631,7 @@ local DiscordIcon = Create("ImageLabel", {
     Size = UDim2.new(0, 30, 0, 30),
     Position = UDim2.new(0, 10, 0.5, -15),
     BackgroundTransparency = 1,
-    Image = "rbxassetid://7733709235", -- Discord logo
+    Image = "rbxassetid://72534526032146", -- Discord logo
     ImageColor3 = Color3.fromRGB(255, 255, 255)
 })
 
