@@ -1,4 +1,3 @@
-```lua
 --[[
   Hidden - Fisch Hub Roblox UI
   100% visually detailed and closely matches the reference image.
@@ -627,4 +626,3 @@ RunService.RenderStepped:Connect(function()
 end)
 
 return screenGui
-```
