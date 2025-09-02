@@ -20,7 +20,8 @@ local locations = {
     ["Inventory"] = Vector3.new(0, 5, 100),
 }
 
-local selectedLocation = nil
+-- default lokasi (Toko)
+local selectedLocation = "Toko"
 
 -- 🔘 Logo Toggle Button
 local HubGui = Instance.new("ScreenGui", playerGui)
@@ -30,7 +31,7 @@ HubGui.ResetOnSpawn = false
 local LogoButton = Instance.new("ImageButton", HubGui)
 LogoButton.Size = UDim2.new(0, 50, 0, 50)
 LogoButton.Position = UDim2.new(0, 100, 0, 100)
-LogoButton.Image = "rbxassetid://130215901437874" -- ganti asset id logo
+LogoButton.Image = "rbxassetid://90198357725559" -- ganti asset id logo
 LogoButton.BackgroundTransparency = 1
 
 -- Frame Utama
@@ -96,6 +97,7 @@ end
 -- Tombol Tab
 local function createTab(name, yPos, callback)
     local btn = Instance.new("TextButton", Sidebar)
+    btn.Name = name -- ✅ kasih nama sesuai tab
     btn.Size = UDim2.new(1, 0, 0, 40)
     btn.Position = UDim2.new(0, 0, 0, yPos)
     btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
@@ -138,7 +140,7 @@ createTab("Teleport", 45, function()
     dropdown.Size = UDim2.new(1, -20, 0, 40)
     dropdown.Position = UDim2.new(0, 10, 0, 80)
     dropdown.BackgroundColor3 = Color3.fromRGB(70,70,70)
-    dropdown.Text = "Select To Location"
+    dropdown.Text = "Selected: "..selectedLocation -- ✅ default langsung Toko
     dropdown.TextColor3 = Color3.fromRGB(255,255,255)
     dropdown.Font = Enum.Font.Gotham
     dropdown.TextSize = 18
@@ -191,5 +193,8 @@ createTab("Teleport", 45, function()
     end)
 end)
 
--- Default buka Tab Home
-Sidebar:FindFirstChild("Home").MouseButton1Click:Fire()
+-- ✅ Default buka Tab Home
+local homeTab = Sidebar:FindFirstChild("Home")
+if homeTab then
+    homeTab.MouseButton1Click:Fire()
+end
