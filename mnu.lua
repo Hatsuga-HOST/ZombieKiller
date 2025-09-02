@@ -1,58 +1,99 @@
---[[ 
-HuntyHub by Developer Resmi Hunty Zombie
-Features:
-- Show/Hide UI pakai logo
-- 2 Tab (Home & Teleport)
-- Teleport ke 5 lokasi
-- Drag & Move UI
---]]
-
-local player = game.Players.LocalPlayer
+local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 
--- 🟢 Lokasi Teleport (edit sesuai game)
+-- Lokasi Teleport (sesuaikan dengan game Anda)
 local locations = {
-    ["Toko"] = Vector3.new(69.8056411743164, 10.32421588897705, 133.9318084716797),
-    ["Senjata"] = Vector3.new(50, 5, 0),
-    ["Trait"] = Vector3.new(100, 5, 0),
-    ["Lobby"] = Vector3.new(-50, 5, 0),
-    ["Inventory"] = Vector3.new(0, 5, 100),
+    ["Toko"] = CFrame.new(69.8056411743164, 10.32421588897705, 133.9318084716797),
+    ["Senjata"] = CFrame.new(50, 5, 0),
+    ["Trait"] = CFrame.new(100, 5, 0),
+    ["Lobby"] = CFrame.new(-50, 5, 0),
+    ["Inventory"] = CFrame.new(0, 5, 100),
 }
 
--- default lokasi (Toko)
-local selectedLocation = "Toko"
-
--- 🔘 Logo Toggle Button
-local HubGui = Instance.new("ScreenGui", playerGui)
+-- UI Creation
+local HubGui = Instance.new("ScreenGui")
 HubGui.Name = "HuntyHub"
 HubGui.ResetOnSpawn = false
+HubGui.Parent = playerGui
 
-local LogoButton = Instance.new("ImageButton", HubGui)
+-- Logo Toggle Button
+local LogoButton = Instance.new("ImageButton")
 LogoButton.Size = UDim2.new(0, 50, 0, 50)
-LogoButton.Position = UDim2.new(0, 100, 0, 100)
-LogoButton.Image = "rbxassetid://90198357725559" -- ganti asset id logo
+LogoButton.Position = UDim2.new(0, 10, 0.5, -25)
+LogoButton.Image = "rbxassetid://90198357725559" -- Ganti dengan asset ID logo Anda
 LogoButton.BackgroundTransparency = 1
+LogoButton.Parent = HubGui
 
--- Frame Utama
-local MainFrame = Instance.new("Frame", HubGui)
+-- Main Frame
+local MainFrame = Instance.new("Frame")
 MainFrame.Size = UDim2.new(0, 400, 0, 300)
 MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
-MainFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
+MainFrame.Parent = HubGui
 
--- Bisa drag frame
+-- Title Bar
+local TitleBar = Instance.new("Frame")
+TitleBar.Size = UDim2.new(1, 0, 0, 30)
+TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = MainFrame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -40, 1, 0)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "HuntyHub"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 16
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = TitleBar
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 30, 1, 0)
+CloseButton.Position = UDim2.new(1, -30, 0, 0)
+CloseButton.BackgroundTransparency = 1
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.TextSize = 16
+CloseButton.Parent = TitleBar
+
+-- Sidebar
+local Sidebar = Instance.new("Frame")
+Sidebar.Size = UDim2.new(0, 100, 1, -30)
+Sidebar.Position = UDim2.new(0, 0, 0, 30)
+Sidebar.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+Sidebar.BorderSizePixel = 0
+Sidebar.Parent = MainFrame
+
+-- Content Frame
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Size = UDim2.new(1, -100, 1, -30)
+ContentFrame.Position = UDim2.new(0, 100, 0, 30)
+ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+ContentFrame.BorderSizePixel = 0
+ContentFrame.ClipsDescendants = true
+ContentFrame.Parent = MainFrame
+
+-- Drag Functionality
 local dragging, dragInput, dragStart, startPos
+
 local function update(input)
     local delta = input.Position - dragStart
-    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
-        startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 end
-MainFrame.InputBegan:Connect(function(input)
+
+TitleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
         dragStart = input.Position
         startPos = MainFrame.Position
+        
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
                 dragging = false
@@ -60,11 +101,13 @@ MainFrame.InputBegan:Connect(function(input)
         end)
     end
 end)
-MainFrame.InputChanged:Connect(function(input)
+
+TitleBar.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement then
         dragInput = input
     end
 end)
+
 UserInputService.InputChanged:Connect(function(input)
     if input == dragInput and dragging then
         update(input)
@@ -76,126 +119,132 @@ LogoButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
 
--- Sidebar
-local Sidebar = Instance.new("Frame", MainFrame)
-Sidebar.Size = UDim2.new(0, 100, 1, 0)
-Sidebar.BackgroundColor3 = Color3.fromRGB(45,45,45)
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+end)
 
--- Content Frame
-local ContentFrame = Instance.new("Frame", MainFrame)
-ContentFrame.Size = UDim2.new(1, -100, 1, 0)
-ContentFrame.Position = UDim2.new(0, 100, 0, 0)
-ContentFrame.BackgroundColor3 = Color3.fromRGB(35,35,35)
-
--- Fungsi ganti tab
+-- Tab Management
 local function clearContent()
-    for _, child in pairs(ContentFrame:GetChildren()) do
-        child:Destroy()
+    for _, child in ipairs(ContentFrame:GetChildren()) do
+        if child:IsA("Frame") or child:IsA("ScrollingFrame") then
+            child:Destroy()
+        end
     end
 end
 
--- 🔥 Simpan callback biar bisa dipanggil
-local homeCallback
-local teleportCallback
-
--- Tombol Tab
 local function createTab(name, yPos, callback)
-    local btn = Instance.new("TextButton", Sidebar)
+    local btn = Instance.new("TextButton")
+    btn.Name = name
     btn.Size = UDim2.new(1, 0, 0, 40)
     btn.Position = UDim2.new(0, 0, 0, yPos)
-    btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
-    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    btn.BorderSizePixel = 0
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.Text = name
     btn.Font = Enum.Font.Gotham
     btn.TextSize = 16
-    btn.MouseButton1Click:Connect(callback)
-    return callback
+    btn.Parent = Sidebar
+    
+    btn.MouseButton1Click:Connect(function()
+        clearContent()
+        callback()
+    end)
+    
+    return btn
 end
 
--- Tab Home
-homeCallback = createTab("Home", 0, function()
-    clearContent()
-    local label = Instance.new("TextLabel", ContentFrame)
-    label.Size = UDim2.new(1, -20, 1, -20)
-    label.Position = UDim2.new(0, 10, 0, 10)
-    label.BackgroundTransparency = 1
-    label.TextWrapped = true
-    label.Text = "Selamat datang di HuntyHub!\n\nScript resmi buatan Developer Hunty Zombie."
-    label.TextColor3 = Color3.fromRGB(255,255,255)
-    label.Font = Enum.Font.GothamSemibold
-    label.TextSize = 18
+-- Home Tab
+local homeTab = createTab("Home", 0, function()
+    local container = Instance.new("ScrollingFrame")
+    container.Size = UDim2.new(1, 0, 1, 0)
+    container.BackgroundTransparency = 1
+    container.ScrollBarThickness = 5
+    container.CanvasSize = UDim2.new(0, 0, 0, 200)
+    container.Parent = ContentFrame
+    
+    local welcomeLabel = Instance.new("TextLabel")
+    welcomeLabel.Size = UDim2.new(1, -20, 0, 100)
+    welcomeLabel.Position = UDim2.new(0, 10, 0, 10)
+    welcomeLabel.BackgroundTransparency = 1
+    welcomeLabel.Text = "Selamat datang di HuntyHub!\n\nScript resmi buatan Developer Hunty Zombie."
+    welcomeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    welcomeLabel.Font = Enum.Font.GothamSemibold
+    welcomeLabel.TextSize = 18
+    welcomeLabel.TextWrapped = true
+    welcomeLabel.Parent = container
+    
+    local featuresLabel = Instance.new("TextLabel")
+    featuresLabel.Size = UDim2.new(1, -20, 0, 80)
+    featuresLabel.Position = UDim2.new(0, 10, 0, 120)
+    featuresLabel.BackgroundTransparency = 1
+    featuresLabel.Text = "Fitur:\n- Teleport ke berbagai lokasi\n- UI yang dapat digerakkan\n- Tampilan yang user-friendly"
+    featuresLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    featuresLabel.Font = Enum.Font.Gotham
+    featuresLabel.TextSize = 14
+    featuresLabel.TextWrapped = true
+    featuresLabel.Parent = container
 end)
 
--- Tab Teleport
-teleportCallback = createTab("Teleport", 45, function()
-    clearContent()
+-- Teleport Tab
+local teleportTab = createTab("Teleport", 40, function()
+    local container = Instance.new("ScrollingFrame")
+    container.Size = UDim2.new(1, 0, 1, 0)
+    container.BackgroundTransparency = 1
+    container.ScrollBarThickness = 5
+    container.CanvasSize = UDim2.new(0, 0, 0, 250)
+    container.Parent = ContentFrame
     
-    local instruksi = Instance.new("TextLabel", ContentFrame)
-    instruksi.Size = UDim2.new(1, -20, 0, 60)
-    instruksi.Position = UDim2.new(0, 10, 0, 10)
-    instruksi.BackgroundTransparency = 1
-    instruksi.TextWrapped = true
-    instruksi.Text = "Cara pakai: Pilih lokasi dengan tombol di bawah, lalu tekan 'Running the Teleportation Feature'."
-    instruksi.TextColor3 = Color3.fromRGB(255,255,255)
-    instruksi.Font = Enum.Font.Gotham
-    instruksi.TextSize = 16
+    local instruction = Instance.new("TextLabel")
+    instruction.Size = UDim2.new(1, -20, 0, 60)
+    instruction.Position = UDim2.new(0, 10, 0, 10)
+    instruction.BackgroundTransparency = 1
+    instruction.Text = "Pilih lokasi dan tekan tombol teleport:"
+    instruction.TextColor3 = Color3.fromRGB(255, 255, 255)
+    instruction.Font = Enum.Font.Gotham
+    instruction.TextSize = 16
+    instruction.TextWrapped = true
+    instruction.Parent = container
     
-    local dropdown = Instance.new("TextButton", ContentFrame)
-    dropdown.Size = UDim2.new(1, -20, 0, 40)
-    dropdown.Position = UDim2.new(0, 10, 0, 80)
-    dropdown.BackgroundColor3 = Color3.fromRGB(70,70,70)
-    dropdown.Text = "Selected: "..selectedLocation
-    dropdown.TextColor3 = Color3.fromRGB(255,255,255)
-    dropdown.Font = Enum.Font.Gotham
-    dropdown.TextSize = 18
-    
-    local optionsFrame = Instance.new("Frame", ContentFrame)
-    optionsFrame.Size = UDim2.new(1, -20, 0, 200)
-    optionsFrame.Position = UDim2.new(0, 10, 0, 130)
-    optionsFrame.BackgroundColor3 = Color3.fromRGB(50,50,50)
-    optionsFrame.Visible = false
-    
-    local y = 0
-    for name, pos in pairs(locations) do
-        local opt = Instance.new("TextButton", optionsFrame)
-        opt.Size = UDim2.new(1, -10, 0, 35)
-        opt.Position = UDim2.new(0, 5, 0, y)
-        opt.BackgroundColor3 = Color3.fromRGB(80,80,80)
-        opt.Text = name
-        opt.TextColor3 = Color3.fromRGB(255,255,255)
-        opt.Font = Enum.Font.Gotham
-        opt.TextSize = 16
-        opt.MouseButton1Click:Connect(function()
-            selectedLocation = name
-            dropdown.Text = "Selected: "..name
-            optionsFrame.Visible = false
-        end)
-        y = y + 40
-    end
-    
-    dropdown.MouseButton1Click:Connect(function()
-        optionsFrame.Visible = not optionsFrame.Visible
-    end)
-    
-    local runBtn = Instance.new("TextButton", ContentFrame)
-    runBtn.Size = UDim2.new(1, -20, 0, 40)
-    runBtn.Position = UDim2.new(0, 10, 1, -50)
-    runBtn.BackgroundColor3 = Color3.fromRGB(100,0,0)
-    runBtn.Text = "Running the Teleportation Feature"
-    runBtn.TextColor3 = Color3.fromRGB(255,255,255)
-    runBtn.Font = Enum.Font.GothamBold
-    runBtn.TextSize = 16
-    
-    runBtn.MouseButton1Click:Connect(function()
-        if selectedLocation and locations[selectedLocation] then
+    local yOffset = 80
+    for locationName, locationCFrame in pairs(locations) do
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.new(1, -20, 0, 40)
+        button.Position = UDim2.new(0, 10, 0, yOffset)
+        button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+        button.BorderSizePixel = 0
+        button.Text = locationName
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.Font = Enum.Font.Gotham
+        button.TextSize = 16
+        button.Parent = container
+        
+        button.MouseButton1Click:Connect(function()
             if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                player.Character.HumanoidRootPart.CFrame = CFrame.new(locations[selectedLocation])
+                player.Character.HumanoidRootPart.CFrame = locationCFrame
+            else
+                warn("Karakter atau HumanoidRootPart tidak ditemukan!")
             end
-        else
-            runBtn.Text = "Please select a location first!"
-        end
-    end)
+        end)
+        
+        yOffset = yOffset + 50
+    end
 end)
 
--- ✅ Default langsung buka Home tanpa error
-homeCallback()
+-- Initialize with Home tab
+homeTab:GetPropertyChangedSignal("BackgroundColor3"):Wait()
+clearContent()
+homeTab.MouseButton1Click:Connect(function() end)()
+
+-- Make logo slightly transparent when not hovered
+LogoButton.MouseEnter:Connect(function()
+    TweenService:Create(LogoButton, TweenInfo.new(0.2), {ImageTransparency = 0}):Play()
+end)
+
+LogoButton.MouseLeave:Connect(function()
+    TweenService:Create(LogoButton, TweenInfo.new(0.2), {ImageTransparency = 0.3}):Play()
+end)
+
+-- Initial transparency
+LogoButton.ImageTransparency = 0.3
+
+print("HuntyHub loaded successfully!")
