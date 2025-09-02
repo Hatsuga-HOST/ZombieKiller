@@ -11,6 +11,7 @@ local ZiaanHub = Instance.new("ScreenGui")
 ZiaanHub.Name = "ZiaanHub"
 ZiaanHub.ResetOnSpawn = false
 ZiaanHub.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ZiaanHub.Parent = playerGui
 
 -- Main Frame (Draggable)
 local MainFrame = Instance.new("Frame")
@@ -595,8 +596,8 @@ player.CharacterAdded:Connect(function(character)
     updateSlider(JumpButton, JumpFill, JumpLabel, character.Humanoid.JumpPower, 50, 500, "Jump Height")
 end)
 
--- Dragging functionality
-local function updateDrag(input)
+-- Improved dragging functionality
+local function update(input)
     local delta = input.Position - dragStart
     MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 end
@@ -623,7 +624,7 @@ end)
 
 UserInputService.InputChanged:Connect(function(input)
     if input == dragInput and dragging then
-        updateDrag(input)
+        update(input)
     end
 end)
 
@@ -686,6 +687,3 @@ end)
 JoinButton.MouseButton1Click:Connect(function()
     setclipboard("https://discord.gg/example") -- Replace with your Discord invite link
 end)
-
--- Final setup
-ZiaanHub.Parent = playerGui
