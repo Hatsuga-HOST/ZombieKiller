@@ -22,7 +22,7 @@ HubGui.Parent = playerGui
 local LogoButton = Instance.new("ImageButton")
 LogoButton.Size = UDim2.new(0, 50, 0, 50)
 LogoButton.Position = UDim2.new(0, 10, 0.5, -25)
-LogoButton.Image = "rbxassetid://130215901437874" -- Ganti dengan asset ID logo Anda
+LogoButton.Image = "rbxassetid://134650706258031" -- Ganti dengan asset ID logo Anda
 LogoButton.BackgroundTransparency = 1
 LogoButton.Parent = HubGui
 
