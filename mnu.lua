@@ -30,7 +30,7 @@ HubGui.ResetOnSpawn = false
 local LogoButton = Instance.new("ImageButton", HubGui)
 LogoButton.Size = UDim2.new(0, 50, 0, 50)
 LogoButton.Position = UDim2.new(0, 100, 0, 100)
-LogoButton.Image = "rbxassetid://90198357725559" -- ganti asset id logo
+LogoButton.Image = "rbxassetid://130215901437874" -- ganti asset id logo
 LogoButton.BackgroundTransparency = 1
 
 -- Frame Utama
