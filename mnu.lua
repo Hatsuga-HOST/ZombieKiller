@@ -11,6 +11,7 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -44,8 +45,8 @@ HubGui.Parent = playerGui
 
 -- Main container (initially hidden)
 local MainContainer = Instance.new("Frame")
-MainContainer.Size = UDim2.new(0, 500, 0, 400)
-MainContainer.Position = UDim2.new(0.5, -250, 0.5, -200)
+MainContainer.Size = UDim2.new(0, 500, 0, 500)
+MainContainer.Position = UDim2.new(0.5, -250, 0.5, -250)
 MainContainer.BackgroundColor3 = colors.background
 MainContainer.BorderSizePixel = 0
 MainContainer.ClipsDescendants = true
@@ -87,7 +88,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(0, 200, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "HUNTYHUB v2.0"
+Title.Text = "HUNTYHUB TELEPORT"
 Title.TextColor3 = colors.text
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 16
@@ -100,7 +101,7 @@ local CloseButton = Instance.new("TextButton")
 CloseButton.Size = UDim2.new(0, 40, 0, 40)
 CloseButton.Position = UDim2.new(1, -40, 0, 0)
 CloseButton.BackgroundTransparency = 1
-CloseButton.Text = "Ã—"
+CloseButton.Text = "×"
 CloseButton.TextColor3 = colors.text
 CloseButton.Font = Enum.Font.GothamBold
 CloseButton.TextSize = 24
@@ -108,7 +109,7 @@ CloseButton.ZIndex = 3
 CloseButton.Parent = Header
 
 -- Tab buttons
-local Tabs = {"Teleport", "Player", "Settings", "Credits"}
+local Tabs = {"Home", "Teleport"}
 local TabButtons = {}
 local TabFrames = {}
 
@@ -203,7 +204,7 @@ for i, tabName in ipairs(Tabs) do
 end
 
 -- Set first tab as active
-TabButtons["Teleport"].BackgroundColor3 = colors.accent
+TabButtons["Home"].BackgroundColor3 = colors.accent
 
 -- Toggle button
 local ToggleButton = Instance.new("TextButton")
@@ -293,145 +294,140 @@ local function createTextBox(placeholder, layoutOrder)
     return textBox
 end
 
--- Function to create slider with consistent style
-local function createSlider(min, max, defaultValue, layoutOrder, valueChangedCallback)
-    local sliderContainer = Instance.new("Frame")
-    sliderContainer.Size = UDim2.new(1, 0, 0, 50)
-    sliderContainer.BackgroundTransparency = 1
-    sliderContainer.LayoutOrder = layoutOrder
-    
-    local sliderName = Instance.new("TextLabel")
-    sliderName.Size = UDim2.new(1, 0, 0, 20)
-    sliderName.BackgroundTransparency = 1
-    sliderName.Text = "Slider"
-    sliderName.TextColor3 = colors.text
-    sliderName.Font = Enum.Font.Gotham
-    sliderName.TextSize = 14
-    sliderName.TextXAlignment = Enum.TextXAlignment.Left
-    sliderName.Parent = sliderContainer
-    
-    local sliderBackground = Instance.new("Frame")
-    sliderBackground.Size = UDim2.new(1, 0, 0, 5)
-    sliderBackground.Position = UDim2.new(0, 0, 0, 25)
-    sliderBackground.BackgroundColor3 = colors.secondary
-    sliderBackground.BorderSizePixel = 0
-    sliderBackground.Parent = sliderContainer
-    
-    local sliderFill = Instance.new("Frame")
-    sliderFill.Size = UDim2.new(0.5, 0, 1, 0)
-    sliderFill.BackgroundColor3 = colors.accent
-    sliderFill.BorderSizePixel = 0
-    sliderFill.Parent = sliderBackground
-    
-    local sliderButton = Instance.new("TextButton")
-    sliderButton.Size = UDim2.new(0, 15, 0, 15)
-    sliderButton.Position = UDim2.new(0.5, -7.5, 0, -5)
-    sliderButton.BackgroundColor3 = colors.text
-    sliderButton.BorderSizePixel = 0
-    sliderButton.Text = ""
-    sliderButton.Parent = sliderBackground
-    
-    local sliderValue = Instance.new("TextLabel")
-    sliderValue.Size = UDim2.new(1, 0, 0, 20)
-    sliderValue.Position = UDim2.new(0, 0, 0, 30)
-    sliderValue.BackgroundTransparency = 1
-    sliderValue.Text = tostring(defaultValue)
-    sliderValue.TextColor3 = colors.text
-    sliderValue.Font = Enum.Font.Gotham
-    sliderValue.TextSize = 12
-    sliderValue.TextXAlignment = Enum.TextXAlignment.Right
-    sliderValue.Parent = sliderContainer
-    
-    -- Rounded corners
-    for _, frame in {sliderBackground, sliderFill, sliderButton} do
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 10)
-        corner.Parent = frame
-    end
-    
-    -- Slider functionality
-    local isSliding = false
-    local function updateSlider(input)
-        if not isSliding then return end
-        
-        local relativeX = (input.Position.X - sliderBackground.AbsolutePosition.X) / sliderBackground.AbsoluteSize.X
-        relativeX = math.clamp(relativeX, 0, 1)
-        
-        local value = math.floor(min + (max - min) * relativeX)
-        sliderValue.Text = tostring(value)
-        sliderFill.Size = UDim2.new(relativeX, 0, 1, 0)
-        sliderButton.Position = UDim2.new(relativeX, -7.5, 0, -5)
-        
-        if valueChangedCallback then
-            valueChangedCallback(value)
-        end
-    end
-    
-    sliderButton.MouseButton1Down:Connect(function()
-        isSliding = true
-    end)
-    
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            isSliding = false
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            updateSlider(input)
-        end
-    end)
-    
-    return sliderContainer, sliderName
-end
+-- Populate Home tab
+local homeFrame = TabFrames["Home"]
+local welcomeLabel = createLabel("Selamat Datang di HuntyHub Teleport", 1, 18)
+welcomeLabel.TextXAlignment = Enum.TextXAlignment.Center
+welcomeLabel.Size = UDim2.new(1, 0, 0, 40)
+welcomeLabel.Parent = homeFrame
+
+local descLabel = createLabel("HuntyHub adalah script eksklusif yang memungkinkan Anda untuk melakukan teleportasi ke berbagai lokasi penting dalam game dengan mudah dan cepat.", 2, 14)
+descLabel.TextXAlignment = Enum.TextXAlignment.Center
+descLabel.Size = UDim2.new(1, 0, 0, 60)
+descLabel.TextWrapped = true
+descLabel.Parent = homeFrame
+
+local featuresLabel = createLabel("Fitur Utama:", 3, 16)
+featuresLabel.TextXAlignment = Enum.TextXAlignment.Left
+featuresLabel.Parent = homeFrame
+
+local feature1 = createLabel("• Teleportasi ke 11 lokasi penting", 4, 14)
+feature1.TextXAlignment = Enum.TextXAlignment.Left
+feature1.Parent = homeFrame
+
+local feature2 = createLabel("• Antarmuka yang user-friendly", 5, 14)
+feature2.TextXAlignment = Enum.TextXAlignment.Left
+feature2.Parent = homeFrame
+
+local feature3 = createLabel("• Tombol toggle untuk membuka/menutup UI", 6, 14)
+feature3.TextXAlignment = Enum.TextXAlignment.Left
+feature3.Parent = homeFrame
+
+local tutorialLabel = createLabel("Cara Penggunaan:", 7, 16)
+tutorialLabel.TextXAlignment = Enum.TextXAlignment.Left
+tutorialLabel.Parent = homeFrame
+
+local step1 = createLabel("1. Tekan tombol 'H' atau klik tombol H di sudut kiri atas untuk membuka UI", 8, 14)
+step1.TextXAlignment = Enum.TextXAlignment.Left
+step1.TextWrapped = true
+step1.Size = UDim2.new(1, 0, 0, 40)
+step1.Parent = homeFrame
+
+local step2 = createLabel("2. Pilih tab 'Teleport' untuk melihat daftar lokasi", 9, 14)
+step2.TextXAlignment = Enum.TextXAlignment.Left
+step2.TextWrapped = true
+step2.Size = UDim2.new(1, 0, 0, 40)
+step2.Parent = homeFrame
+
+local step3 = createLabel("3. Klik tombol teleport untuk langsung berpindah ke lokasi tujuan", 10, 14)
+step3.TextXAlignment = Enum.TextXAlignment.Left
+step3.TextWrapped = true
+step3.Size = UDim2.new(1, 0, 0, 40)
+step3.Parent = homeFrame
+
+local warningLabel = createLabel("PERINGATAN: Gunakan script ini dengan bijak. Developer tidak bertanggung jawab atas akibat yang ditimbulkan.", 11, 12)
+warningLabel.TextXAlignment = Enum.TextXAlignment.Center
+warningLabel.TextColor3 = colors.warning
+warningLabel.Size = UDim2.new(1, 0, 0, 60)
+warningLabel.TextWrapped = true
+warningLabel.Parent = homeFrame
 
 -- Populate Teleport tab
 local teleportFrame = TabFrames["Teleport"]
+
+-- Teleport locations data
 local teleportLocations = {
-    ["Lobby"] = CFrame.new(0, 5, 0),
-    ["Toko"] = CFrame.new(69.8056411743164, 10.32421588897705, 133.9318084716797),
-    ["Secret Area"] = CFrame.new(100, 50, -200),
-    ["VIP Room"] = CFrame.new(-150, 25, 75)
+    ["Store"] = CFrame.new(69.8056411743164, 10.32421588897705, 133.9318084716797),
+    ["Items"] = CFrame.new(68.81236267089844, 10.418478965759277, 157.36123657226562),
+    ["Characteristics"] = CFrame.new(-24.02008628845215, 9.646740913391113, 182.21234130859375),
+    ["Weapons"] = CFrame.new(63.00526428222656, 9.203720092773438, 91.75598907470703),
+    ["Achievements"] = CFrame.new(5.308657169342041, 9.203719139099121, 188.3883819580078),
+    ["Daily Tasks"] = CFrame.new(48.050018310546875, 9.203718185424805, 184.59385681152344),
+    ["Secret Tasks"] = CFrame.new(34.36442565917969, 9.453873634338379, 85.84275817871094),
+    ["Lobby"] = CFrame.new(-1.4279574155807495, 9.64672565460205, 161.88681030273438),
+    ["Events"] = CFrame.new(21.252410888671875, 9.757711410522461, 146.3155975341797),
+    ["Playing"] = CFrame.new(-22.4, 9.6, 110.3),
 }
 
-local teleportLabel = createLabel("Teleport Locations:", 1, 16)
-teleportLabel.TextXAlignment = Enum.TextXAlignment.Center
-teleportLabel.Size = UDim2.new(1, 0, 0, 30)
-teleportLabel.Parent = teleportFrame
-
-for i, locationName in pairs({"Spawn", "Toko", "Secret Area", "VIP Room"}) do
-    local button = createButton(locationName, i + 1)
+-- Create teleport buttons
+for i, locationName in ipairs({"Store", "Items", "Characteristics", "Weapons", "Achievements", "Daily Tasks", "Secret Tasks", "Lobby", "Events", "Playing"}) do
+    local button = createButton(locationName, i)
     button.Parent = teleportFrame
     
     button.MouseButton1Click:Connect(function()
         local character = player.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = teleportLocations[locationName]
+            -- Smooth teleport with tween
+            local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            local tween = TweenService:Create(character.HumanoidRootPart, tweenInfo, {CFrame = teleportLocations[locationName]})
+            tween:Play()
+            
             -- Show notification
             spawn(function()
-                -- Notification function would be implemented here
+                local notification = Instance.new("TextLabel")
+                notification.Size = UDim2.new(0, 200, 0, 40)
+                notification.Position = UDim2.new(0.5, -100, 0, 50)
+                notification.BackgroundColor3 = colors.success
+                notification.Text = "Teleported to: " .. locationName
+                notification.TextColor3 = colors.text
+                notification.Font = Enum.Font.GothamBold
+                notification.TextSize = 14
+                notification.Visible = true
+                notification.ZIndex = 20
+                notification.Parent = HubGui
+                
+                local notifCorner = Instance.new("UICorner")
+                notifCorner.CornerRadius = UDim.new(0, 6)
+                notifCorner.Parent = notification
+                
+                wait(2)
+                
+                local fadeTween = TweenService:Create(notification, TweenInfo.new(0.5), {BackgroundTransparency = 1, TextTransparency = 1})
+                fadeTween:Play()
+                fadeTween.Completed:Connect(function()
+                    notification:Destroy()
+                end)
             end)
         end
     end)
 end
 
 -- Custom teleport section
-local customLabel = createLabel("Custom Teleport:", 6, 16)
+local customLabel = createLabel("Custom Teleport (Input Coordinates):", 12, 16)
 customLabel.TextXAlignment = Enum.TextXAlignment.Center
 customLabel.Size = UDim2.new(1, 0, 0, 30)
 customLabel.Parent = teleportFrame
 
-local xInput = createTextBox("X Coordinate", 7)
+local xInput = createTextBox("X Coordinate", 13)
 xInput.Parent = teleportFrame
 
-local yInput = createTextBox("Y Coordinate", 8)
+local yInput = createTextBox("Y Coordinate", 14)
 yInput.Parent = teleportFrame
 
-local zInput = createTextBox("Z Coordinate", 9)
+local zInput = createTextBox("Z Coordinate", 15)
 zInput.Parent = teleportFrame
 
-local teleportButton = createButton("Teleport to Coordinates", 10)
+local teleportButton = createButton("Teleport to Coordinates", 16)
 teleportButton.Parent = teleportFrame
 
 teleportButton.MouseButton1Click:Connect(function()
@@ -441,214 +437,38 @@ teleportButton.MouseButton1Click:Connect(function()
     
     local character = player.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
-        character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
-    end
-end)
-
--- Populate Player tab
-local playerFrame = TabFrames["Player"]
-local playerLabel = createLabel("Player Modifications:", 1, 16)
-playerLabel.TextXAlignment = Enum.TextXAlignment.Center
-playerLabel.Size = UDim2.new(1, 0, 0, 30)
-playerLabel.Parent = playerFrame
-
--- WalkSpeed slider
-local walkSpeedSlider, walkSpeedLabel = createSlider(16, 100, 16, 2, function(value)
-    local character = player.Character
-    if character and character:FindFirstChild("Humanoid") then
-        character.Humanoid.WalkSpeed = value
-    end
-end)
-walkSpeedLabel.Text = "Walk Speed"
-walkSpeedSlider.Parent = playerFrame
-
--- JumpPower slider
-local jumpPowerSlider, jumpPowerLabel = createSlider(50, 200, 50, 3, function(value)
-    local character = player.Character
-    if character and character:FindFirstChild("Humanoid") then
-        character.Humanoid.JumpPower = value
-    end
-end)
-jumpPowerLabel.Text = "Jump Power"
-jumpPowerSlider.Parent = playerFrame
-
--- Noclip toggle
-local noclipButton = createButton("Toggle Noclip", 4)
-noclipButton.Parent = playerFrame
-
-local noclipEnabled = false
-local noclipConnection
-noclipButton.MouseButton1Click:Connect(function()
-    noclipEnabled = not noclipEnabled
-    local character = player.Character
-    
-    if noclipEnabled then
-        noclipButton.Text = "Noclip: ON"
-        noclipButton.BackgroundColor3 = colors.success
+        local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        local tween = TweenService:Create(character.HumanoidRootPart, tweenInfo, {CFrame = CFrame.new(x, y, z)})
+        tween:Play()
         
-        if character then
-            for _, part in pairs(character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
-                end
-            end
-        end
-        
-        if noclipConnection then noclipConnection:Disconnect() end
-        noclipConnection = RunService.Stepped:Connect(function()
-            if character and noclipEnabled then
-                for _, part in pairs(character:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        part.CanCollide = false
-                    end
-                end
-            else
-                noclipConnection:Disconnect()
-            end
-        end)
-    else
-        noclipButton.Text = "Toggle Noclip"
-        noclipButton.BackgroundColor3 = colors.button
-        
-        if character then
-            for _, part in pairs(character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = true
-                end
-            end
-        end
-        
-        if noclipConnection then
-            noclipConnection:Disconnect()
-        end
-    end
-end)
-
--- Fly toggle
-local flyButton = createButton("Toggle Fly", 5)
-flyButton.Parent = playerFrame
-
-local flyEnabled = false
-local flyConnection
-flyButton.MouseButton1Click:Connect(function()
-    flyEnabled = not flyEnabled
-    local character = player.Character
-    
-    if flyEnabled then
-        flyButton.Text = "Fly: ON"
-        flyButton.BackgroundColor3 = colors.success
-        
-        -- Fly implementation would go here
-        -- This is a simplified version
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            local bodyVelocity = Instance.new("BodyVelocity")
-            bodyVelocity.Velocity = Vector3.new(0, 0, 0)
-            bodyVelocity.MaxForce = Vector3.new(0, 0, 0)
-            bodyVelocity.Parent = character.HumanoidRootPart
+        -- Show notification
+        spawn(function()
+            local notification = Instance.new("TextLabel")
+            notification.Size = UDim2.new(0, 250, 0, 40)
+            notification.Position = UDim2.new(0.5, -125, 0, 50)
+            notification.BackgroundColor3 = colors.success
+            notification.Text = "Teleported to: " .. x .. ", " .. y .. ", " .. z
+            notification.TextColor3 = colors.text
+            notification.Font = Enum.Font.GothamBold
+            notification.TextSize = 14
+            notification.Visible = true
+            notification.ZIndex = 20
+            notification.Parent = HubGui
             
-            if flyConnection then flyConnection:Disconnect() end
-            flyConnection = RunService.Heartbeat:Connect(function()
-                if character and flyEnabled then
-                    -- Fly logic would be implemented here
-                else
-                    flyConnection:Disconnect()
-                    if bodyVelocity then bodyVelocity:Destroy() end
-                end
+            local notifCorner = Instance.new("UICorner")
+            notifCorner.CornerRadius = UDim.new(0, 6)
+            notifCorner.Parent = notification
+            
+            wait(2)
+            
+            local fadeTween = TweenService:Create(notification, TweenInfo.new(0.5), {BackgroundTransparency = 1, TextTransparency = 1})
+            fadeTween:Play()
+            fadeTween.Completed:Connect(function()
+                notification:Destroy()
             end)
-        end
-    else
-        flyButton.Text = "Toggle Fly"
-        flyButton.BackgroundColor3 = colors.button
-        
-        if flyConnection then
-            flyConnection:Disconnect()
-        end
-        
-        if character and character.HumanoidRootPart:FindFirstChild("BodyVelocity") then
-            character.HumanoidRootPart.BodyVelocity:Destroy()
-        end
+        end)
     end
 end)
-
--- Populate Settings tab
-local settingsFrame = TabFrames["Settings"]
-local settingsLabel = createLabel("Hub Settings:", 1, 16)
-settingsLabel.TextXAlignment = Enum.TextXAlignment.Center
-settingsLabel.Size = UDim2.new(1, 0, 0, 30)
-settingsLabel.Parent = settingsFrame
-
--- UI Color picker
-local uiColorButton = createButton("Change UI Color", 2)
-uiColorButton.Parent = settingsFrame
-
-uiColorButton.MouseButton1Click:Connect(function()
-    -- Color picker implementation would go here
-    -- For simplicity, we'll just cycle through some colors
-    local colorThemes = {
-        {background = Color3.fromRGB(30, 40, 50), accent = Color3.fromRGB(0, 150, 200)},
-        {background = Color3.fromRGB(40, 30, 50), accent = Color3.fromRGB(180, 70, 200)},
-        {background = Color3.fromRGB(50, 40, 30), accent = Color3.fromRGB(220, 150, 50)}
-    }
-    
-    local currentTheme = 1
-    
-    currentTheme = currentTheme % #colorThemes + 1
-    local theme = colorThemes[currentTheme]
-    
-    TweenService:Create(
-        MainContainer,
-        TweenInfo.new(0.5),
-        {BackgroundColor3 = theme.background}
-    ):Play()
-    
-    TweenService:Create(
-        Header,
-        TweenInfo.new(0.5),
-        {BackgroundColor3 = theme.header}
-    ):Play()
-    
-    for _, button in pairs(TabButtons) do
-        if button.BackgroundColor3 == colors.accent then
-            TweenService:Create(
-                button,
-                TweenInfo.new(0.5),
-                {BackgroundColor3 = theme.accent}
-            ):Play()
-        end
-    end
-    
-    colors.background = theme.background
-    colors.accent = theme.accent
-end)
-
--- Keybind settings
-local keybindLabel = createLabel("Toggle Keybind: H", 3)
-keybindLabel.TextXAlignment = Enum.TextXAlignment.Center
-keybindLabel.Parent = settingsFrame
-
--- Populate Credits tab
-local creditsFrame = TabFrames["Credits"]
-local creditsLabel = createLabel("HuntyHub v2.0", 1, 18)
-creditsLabel.TextXAlignment = Enum.TextXAlignment.Center
-creditsLabel.Size = UDim2.new(1, 0, 0, 40)
-creditsLabel.Parent = creditsFrame
-
-local developerLabel = createLabel("Developed by: Dev HuntyZombie", 2, 16)
-developerLabel.TextXAlignment = Enum.TextXAlignment.Center
-developerLabel.Parent = creditsFrame
-
-local specialLabel = createLabel("Special thanks to:", 3, 14)
-specialLabel.TextXAlignment = Enum.TextXAlignment.Center
-specialLabel.Parent = creditsFrame
-
-local thanksLabel = createLabel("The Roblox scripting community\nAll our beta testers", 4, 12)
-thanksLabel.TextXAlignment = Enum.TextXAlignment.Center
-thanksLabel.Size = UDim2.new(1, 0, 0, 60)
-thanksLabel.Parent = creditsFrame
-
-local versionLabel = createLabel("Version 2.0 | Â© 2023", 5, 12)
-versionLabel.TextXAlignment = Enum.TextXAlignment.Center
-versionLabel.Parent = creditsFrame
 
 -- UI toggle functionality
 local uiVisible = false
@@ -661,7 +481,7 @@ local function toggleUI()
         TweenService:Create(
             MainContainer,
             TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-            {Size = UDim2.new(0, 500, 0, 400)}
+            {Size = UDim2.new(0, 500, 0, 500)}
         ):Play()
     else
         TweenService:Create(
@@ -719,3 +539,37 @@ end)
 
 -- Initialize UI
 print("HuntyHub Enhanced Version Loaded!")
+print("Press H to toggle the UI")
+
+-- Add notification system
+function showNotification(message, color)
+    local notification = Instance.new("TextLabel")
+    notification.Size = UDim2.new(0, 300, 0, 50)
+    notification.Position = UDim2.new(0.5, -150, 0, 10)
+    notification.BackgroundColor3 = color or colors.accent
+    notification.Text = message
+    notification.TextColor3 = colors.text
+    notification.Font = Enum.Font.GothamBold
+    notification.TextSize = 14
+    notification.Visible = true
+    notification.ZIndex = 20
+    notification.Parent = HubGui
+    
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 6)
+    notifCorner.Parent = notification
+    
+    -- Auto-remove after 3 seconds
+    delay(3, function()
+        if notification then
+            local fadeTween = TweenService:Create(notification, TweenInfo.new(0.5), {BackgroundTransparency = 1, TextTransparency = 1})
+            fadeTween:Play()
+            fadeTween.Completed:Connect(function()
+                notification:Destroy()
+            end)
+        end
+    end)
+end
+
+-- Show welcome notification
+showNotification("HuntyHub Teleport Loaded! Press H to open", colors.success) 
